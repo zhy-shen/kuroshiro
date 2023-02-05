@@ -234,12 +234,7 @@ class Kuroshiro {
         case "romaji":
           if (options.mode === "okurigana") {
             for (let n2 = 0; n2 < notations.length; n2++) {
-              if (notations[n2][1] !== 1) {
-                result += notations[n2][0];
-              }
-              else {
-                result += notations[n2][0] + options.delimiter_start + toRawRomaji(notations[n2][3], options.romajiSystem) + options.delimiter_end;
-              }
+              result += notations[n2][0] + options.delimiter_start + toRawRomaji(notations[n2][3], options.romajiSystem) + options.delimiter_end;
             }
           }
           else { // furigana
