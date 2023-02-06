@@ -231,20 +231,65 @@ class Kuroshiro {
             }
           }
           return result;
-        case "romaji":
-          if (options.mode === "okurigana") {
-            for (let n2 = 0; n2 < notations.length; n2++) {
-              result += notations[n2][0] + options.delimiter_start + toRawRomaji(notations[n2][3], options.romajiSystem) + options.delimiter_end;
+          case "romaji":
+            if (options.mode === "okurigana") {
+  
+              //notation[0]: char
+              //notation[1]: type (1: kanji)
+              for (let n2 = 0; n2 < notations.length; n2++) {
+  
+                //check if 2 characters is left & if both the next two are not kanji
+                if (n2 < notations.length - 1 && ( notations[n2][1] !== 1 && notations[n2 + 1][1] !== 1 ) ) {
+                    const nextTwo = notations[n2][3] + notations[n2 + 1][3];
+  
+                    //check next two chars together
+                    const nextTwoTrans = toRawRomaji(nextTwo, options.romajiSystem);
+  
+                    //check next two chars separate
+                    const twoSeparate = toRawRomaji(notations[n2][3], options.romajiSystem) + toRawRomaji(notations[n2 + 1][3], options.romajiSystem);
+  
+                    if (nextTwoTrans !== twoSeparate) {
+                      result += nextTwo + options.delimiter_start + nextTwoTrans + options.delimiter_end;
+                      n2++;
+                    }
+                    else {
+                      result += notations[n2][0] + options.delimiter_start + toRawRomaji(notations[n2][3], options.romajiSystem) + options.delimiter_end;
+                    }
+                }
+                else {
+                  result += notations[n2][0] + options.delimiter_start + toRawRomaji(notations[n2][3], options.romajiSystem) + options.delimiter_end;
+                }
+              }
             }
-          }
-          else { // furigana
-            result += "<ruby>";
-            for (let n3 = 0; n3 < notations.length; n3++) {
-              result += `${notations[n3][0]}<rp>${options.delimiter_start}</rp><rt>${toRawRomaji(notations[n3][3], options.romajiSystem)}</rt><rp>${options.delimiter_end}</rp>`;
+            else { // furigana
+              for (let n3 = 0; n3 < notations.length; n3++) {
+                result += "<ruby>";
+  
+                //check if 2 characters is left & if both the next two are not kanji
+                if (n3 < notations.length - 1 && ( notations[n3][1] !== 1 && notations[n3 + 1][1] !== 1 ) ) {
+                    const nextTwo = notations[n3][3] + notations[n3 + 1][3];
+  
+                    //check next two chars together
+                    const nextTwoTrans = toRawRomaji(nextTwo, options.romajiSystem);
+  
+                    //check next two chars separate
+                    const twoSeparate = toRawRomaji(notations[n3][3], options.romajiSystem) + toRawRomaji(notations[n3 + 1][3], options.romajiSystem);
+  
+                    if (nextTwoTrans !== twoSeparate) {
+                      result += `${nextTwo}<rp>${options.delimiter_start}</rp><rt>${nextTwoTrans}</rt><rp>${options.delimiter_end}</rp>`;
+                      n3++;
+                    }
+                    else {
+                      result += `${notations[n3][0]}<rp>${options.delimiter_start}</rp><rt>${toRawRomaji(notations[n3][3], options.romajiSystem)}</rt><rp>${options.delimiter_end}</rp>`;
+                    }
+                }
+                else {
+                  result += `${notations[n3][0]}<rp>${options.delimiter_start}</rp><rt>${toRawRomaji(notations[n3][3], options.romajiSystem)}</rt><rp>${options.delimiter_end}</rp>`;
+                }
+              }
+              result += "</ruby>";
             }
-            result += "</ruby>";
-          }
-          return result;
+            return result;
         case "hiragana":
           if (options.mode === "okurigana") {
             for (let n4 = 0; n4 < notations.length; n4++) {
