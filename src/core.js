@@ -231,74 +231,73 @@ class Kuroshiro {
             }
           }
           return result;
-        case "romaji":
-          const notationLength = notations.length;
-
-          for (let n = 0; n < notationLength; n++) {
-            if (options.mode === "furigana") {
-              result += "<ruby>";
-            }
-            
-            //check if 2 characters is left & if both the next two are not kanji
-            if ( hasNext(n, 1) ) {
-              const nextTwo = notations[n][3] + notations[n + 1][3];
-              const nextTwoTrans = toRomaji(nextTwo);
-              const twoSeparate = toRomaji(notations[n][3]) + toRomaji(notations[n + 1][3]);
-
-              if (nextTwoTrans !== twoSeparate) {
-                if (hasNext(n, 2) && notations[n + 2][3] === "ー") {
-                  const nextThree = nextTwo + notations[n + 2][3];
-                  result += formatOutput(nextThree);
-                  n += 2;
+          case "romaji":
+            const notationLength = notations.length;
+  
+            for (let n = 0; n < notationLength; n++) {
+              if (options.mode === "furigana") {
+                result += "<ruby>";
+              }
+              
+              //check if 2 characters is left & if both the next two are not kanji
+              if ( hasNext(n, 1) ) {
+                const nextTwo = notations[n][3] + notations[n + 1][3];
+                const nextTwoTrans = toRomaji(nextTwo);
+                const twoSeparate = toRomaji(notations[n][3]) + toRomaji(notations[n + 1][3]);
+  
+                if (nextTwoTrans !== twoSeparate) {
+                  if (hasNext(n, 2) && notations[n + 2][3] === "ー") {
+                    const nextThree = nextTwo + notations[n + 2][3];
+                    result += formatOutput(nextThree, nextThree);
+                    n += 2;
+                  }
+                  else {
+                    result += formatOutput(nextTwo, nextTwo);
+                    n++;
+                  }
                 }
                 else {
-                  result += formatOutput(nextTwo);
-                  n++;
+                  result += formatOutput(notations[n][0], notations[n][3]);
                 }
+              }
+              
+              else {
+                result += formatOutput(notations[n][0], notations[n][3]);
+              }
+  
+              if (options.mode === "furigana") {
+                result += "</ruby>";
+              }
+            }
+  
+            function toRomaji(char) {
+              return toRawRomaji(char, options.romajiSystem);
+            }
+  
+            function formatOutput(chars, charsKana) {
+              if (options.mode === "okurigana") {
+                return (isJapanese(chars)) ? chars + options.delimiter_start + toRomaji(charsKana) + options.delimiter_end : chars;
               }
               else {
-                result += formatOutput(notations[n][0]);
+                return (isJapanese(chars)) ? `${chars}<rp>${options.delimiter_start}</rp><rt>${toRomaji(charsKana)}</rt><rp>${options.delimiter_end}</rp>` : chars;
               }
             }
-            
-            else {
-              result += formatOutput(notations[n][0]);
-            }
-
-            if (options.mode === "furigana") {
-              result += "</ruby>";
-            }
-          }
-
-          function toRomaji(char) {
-            return toRawRomaji(char, options.romajiSystem);
-          }
-
-          function formatOutput(chars) {
-            if (options.mode === "okurigana") {
-              return (isKana(chars)) ? chars + options.delimiter_start + toRomaji(chars) + options.delimiter_end : chars;
-            }
-            else {
-              return (isKana(chars)) ? `${chars}<rp>${options.delimiter_start}</rp><rt>${toRomaji(chars)}</rt><rp>${options.delimiter_end}</rp>` : chars;
-            }
-          }
-
-          function hasNext(n, num) {
-            if (n < notationLength - num ) {
-
-              for (let i = 0; i < num; i++) {
-                if (notations[n + i][1] === 1) {
-                  return false;
+  
+            function hasNext(n, num) {
+              if (n < notationLength - num ) {
+                for (let i = 0; i < num; i++) {
+                  if (notations[n + i][1] === 1) {
+                    return false;
+                  }
                 }
+                return true;
               }
-              return true;
+              else {
+                return false;
+              }
             }
-            else {
-              return false;
-            }
-          }
-
-          return result;
+  
+            return result;
         case "hiragana":
           if (options.mode === "okurigana") {
             for (let n4 = 0; n4 < notations.length; n4++) {
