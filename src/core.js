@@ -276,10 +276,10 @@ class Kuroshiro {
 
           function formatOutput(chars) {
             if (options.mode === "okurigana") {
-              return chars + options.delimiter_start + toRomaji(chars) + options.delimiter_end;
+              return (isKana(chars)) ? chars + options.delimiter_start + toRomaji(chars) + options.delimiter_end : chars;
             }
             else {
-              return `${chars}<rp>${options.delimiter_start}</rp><rt>${toRomaji(chars)}</rt><rp>${options.delimiter_end}</rp>`;
+              return (isKana(chars)) ? `${chars}<rp>${options.delimiter_start}</rp><rt>${toRomaji(chars)}</rt><rp>${options.delimiter_end}</rp>` : chars;
             }
           }
 
